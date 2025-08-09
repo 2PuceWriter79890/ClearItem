@@ -17,23 +17,23 @@
 namespace inv_cleaner {
 
 InvCleanerMod& InvCleanerMod::getInstance() {
-    static InvCleanerMod instance(*ll::plugin::NativePlugin::current());
+    static InvCleanerMod instance(*ll::mod::NativeMod::current());
     return instance;
 }
 
 bool InvCleanerMod::load() {
-    mLogger.info("插件 InvCleaner 正在加载...");
+    mLogger.info("InvCleaner Mod 正在加载...");
     return true;
 }
 
 bool InvCleanerMod::enable() {
-    mLogger.info("插件 InvCleaner 正在启用...");
+    mLogger.info("InvCleaner Mod 正在启用...");
     registerCommand();
     return true;
 }
 
 bool InvCleanerMod::disable() {
-    mLogger.info("插件 InvCleaner 正在禁用...");
+    mLogger.info("InvCleaner Mod 正在禁用...");
     return true;
 }
 
@@ -44,10 +44,8 @@ void InvCleanerMod::registerCommand() {
         CommandRegistrar::getInstance()
             .getOrCreateCommand(
                 "invclean",
-                "清除存档中玩家背包和末影箱中的指定物品（慎用）",
-                CommandPermissionLevel::Operator,
-                CommandFlag::None,
-                CommandFlag::None
+                "清理全服玩家背包和末影箱中的指定物品",
+                CommandPermissionLevel::Operator
             );
 
     struct Params {
