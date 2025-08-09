@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ll/api/plugin/NativePlugin.h>
+#include <ll/api/mod/NativeMod.h>
 #include <ll/api/io/Logger.h>
 #include "mc/nbt/ListTag.h"
 
@@ -10,14 +10,14 @@ class InvCleanerMod {
 public:
     static InvCleanerMod& getInstance();
 
-    explicit InvCleanerMod(ll::plugin::NativePlugin& self)
+    explicit InvCleanerMod(ll::mod::NativeMod& self)
     : mSelf(self),
       mLogger(self.getSelf().getLogger()) {}
 
     InvCleanerMod(const InvCleanerMod&) = delete;
     InvCleanerMod(InvCleanerMod&&)      = delete;
 
-    [[nodiscard]] ll::plugin::NativePlugin& getSelf() const { return mSelf; }
+    [[nodiscard]] ll::mod::NativeMod& getSelf() const { return mSelf; }
 
     bool load();
     bool enable();
@@ -28,8 +28,8 @@ private:
     void doClearAllPlayers(const std::string& targetItemName, short targetItemAux);
     int  clearItemsInList(ListTag& itemList, const std::string& targetItemName, short targetItemAux);
 
-    ll::plugin::NativePlugin& mSelf;
-    ll::io::Logger&           mLogger;
+    ll::mod::NativeMod& mSelf; // 类型更新为 NativeMod
+    ll::io::Logger&     mLogger;
 };
 
 } // namespace inv_cleaner
