@@ -1,40 +1,35 @@
 #include "mod/InvCleaner.h"
 
-#include <thread>
-#include <atomic>
-
 #include <ll/api/command/Command.h>
 #include <ll/api/command/CommandHandle.h>
 #include <ll/api/command/CommandRegistrar.h>
+#include <mc/server/commands/CommandOrigin.h>
+#include <mc/server/commands/CommandOutput.h>
+#include <mc/nbt/Tag.h>
+#include <mc/nbt/CompoundTag.h>
+#include <mc/nbt/StringTag.h>
+#include <mc/nbt/ShortTag.h>
+
+// GMLIB Headers
 #include "gmlib/mc/world/actor/Player.h"
 #include "gmlib/mc/world/actor/OfflinePlayer.h"
-#include "mc/server/commands/CommandOrigin.h"
-#include "mc/server/commands/CommandOutput.h"
-#include "mc/nbt/CompoundTag.h"
-#include "mc/nbt/StringTag.h"
-#include "mc/nbt/ShortTag.h"
+
+#include <thread>
+#include <atomic>
 
 namespace inv_cleaner {
 
-InvCleanerMod& InvCleanerMod::getInstance() {
-    static InvCleanerMod instance(*ll::mod::NativeMod::current());
-    return instance;
-}
-
-bool InvCleanerMod::load() {
+void InvCleanerMod::load() {
     mLogger.info("InvCleaner Mod 正在加载...");
-    return true;
 }
 
-bool InvCleanerMod::enable() {
+void InvCleanerMod::enable() {
     mLogger.info("InvCleaner Mod 正在启用...");
     registerCommand();
-    return true;
 }
 
-bool InvCleanerMod::disable() {
+void InvCleanerMod::disable() {
     mLogger.info("InvCleaner Mod 正在禁用...");
-    return true;
 }
 
 void InvCleanerMod::registerCommand() {
