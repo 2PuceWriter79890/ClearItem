@@ -1,4 +1,5 @@
 #pragma once
+#include "mod/InvCleaner.h"
 
 #include <ll/api/mod/NativeMod.h>
 #include <ll/api/io/Logger.h>
@@ -19,7 +20,7 @@ public:
 private:
     void registerCommand();
     void doClearAllPlayers(const std::string& targetItemName, short targetItemAux);
-    int  clearItemsInList(ListTag& itemList, const std::string& targetItemName, short targetItemAux);
+    int  clearItemsInNbtList(ListTag& itemList, const std::string& targetItemName, short targetItemAux);
 
     ll::mod::NativeMod& mSelf;
     ll::io::Logger&     mLogger;

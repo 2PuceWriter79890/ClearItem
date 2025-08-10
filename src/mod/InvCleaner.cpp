@@ -6,6 +6,7 @@
 #include <mc/server/commands/CommandOrigin.h>
 #include <mc/server/commands/CommandOutput.h>
 #include <mc/nbt/Tag.h>
+#include <mc/nbt/EndTag.h>
 #include <mc/nbt/CompoundTag.h>
 #include <mc/nbt/StringTag.h>
 #include <mc/nbt/ShortTag.h>
@@ -74,32 +75,42 @@ void InvCleanerMod::doClearAllPlayers(const std::string& targetItemName, short t
 
     gmlib::OfflinePlayer::forEachOfflinePlayer([&](gmlib::OfflinePlayer&& player) {
         processedPlayerCount++;
+        bool isModified = false;
 
-        auto nbtExpected = player.getNbt();
-        if (!nbtExpected.has_value()) {
-            return true;
-        }
-        auto playerNbt = nbtExpected.value();
-
-        int inventoryClearedCount = 0;
-        int enderChestClearedCount = 0;
-
-        if (auto* inventoryList = playerNbt.try_get_list<CompoundTag>("Inventory")) {
-            inventoryClearedCount = clearItemsInList(*inventoryList, targetItemName, targetItemAux);
-        }
-        if (auto* enderChestList = playerNbt.try_get_list<CompoundTag>("EnderChestInventory")) {
-            enderChestClearedCount = clearItemsInList(*enderChestList, targetItemName, targetItemAux);
-        }
-
-        if (inventoryClearedCount > 0 || enderChestClearedCount > 0) {
-            modifiedPlayerCount++;
-            if (!player.setNbt(playerNbt)) {
-                mLogger.error("保存玩家 {} 的NBT数据失败！", player.getServerId());
-            } else if (auto onlinePlayer = player.getPlayer()) {
+        if (auto onlinePlayer = player.getPlayer().as<gmlib::GMPlayer>()) {
+            int clearedCount = onlinePlayer->clearItem(targetItemName, targetItemAux);
+            if (clearedCount > 0) {
+                isModified = true;
                 onlinePlayer->sendText("§e[InvCleaner] 您的部分物品已被管理员清理。");
+            }
+        } else {
+            auto nbtExpected = player.getNbt();
+            if (!nbtExpected.has_value()) {
+                return true;
+            }
+            auto playerNbt = nbtExpected.value();
+
+            int inventoryClearedCount = 0;
+            int enderChestClearedCount = 0;
+
+            if (auto* inventoryList = playerNbt.try_get_list<CompoundTag>("Inventory")) {
+                inventoryClearedCount = clearItemsInNbtList(*inventoryList, targetItemName, targetItemAux);
+            }
+            if (auto* enderChestList = playerNbt.try_get_list<CompoundTag>("EnderChestInventory")) {
+                enderChestClearedCount = clearItemsInNbtList(*enderChestList, targetItemName, targetItemAux);
+            }
+
+            if (inventoryClearedCount > 0 || enderChestClearedCount > 0) {
+                isModified = true;
+                if (!player.setNbt(playerNbt)) {
+                    mLogger.error("保存玩家 {} 的NBT数据失败！", player.getServerId());
+                }
             }
         }
         
+        if (isModified) {
+            modifiedPlayerCount++;
+        }
         return true;
     });
 
@@ -108,7 +119,7 @@ void InvCleanerMod::doClearAllPlayers(const std::string& targetItemName, short t
     mLogger.info("从 {} 名玩家的背包/末影箱中清除了指定物品。", modifiedPlayerCount.load());
 }
 
-int InvCleanerMod::clearItemsInList(ListTag& itemList, const std::string& targetItemName, short targetItemAux) {
+int InvCleanerMod::clearItemsInNbtList(ListTag& itemList, const std::string& targetItemName, short targetItemAux) {
     int clearedCount = 0;
     for (auto it = itemList.begin(); it != itemList.end();) {
         auto* itemTag = dynamic_cast<CompoundTag*>(it->get());
