@@ -10,7 +10,6 @@
 #include <mc/nbt/StringTag.h>
 #include <mc/nbt/ShortTag.h>
 
-// GMLIB Headers
 #include "gmlib/mc/world/actor/Player.h"
 #include "gmlib/mc/world/actor/OfflinePlayer.h"
 
@@ -19,17 +18,20 @@
 
 namespace inv_cleaner {
 
-void InvCleanerMod::load() {
+bool InvCleanerMod::load() {
     mLogger.info("InvCleaner Mod 正在加载...");
+    return true;
 }
 
-void InvCleanerMod::enable() {
+bool InvCleanerMod::enable() {
     mLogger.info("InvCleaner Mod 正在启用...");
     registerCommand();
+    return true;
 }
 
-void InvCleanerMod::disable() {
+bool InvCleanerMod::disable() {
     mLogger.info("InvCleaner Mod 正在禁用...");
+    return true;
 }
 
 void InvCleanerMod::registerCommand() {

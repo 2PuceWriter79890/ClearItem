@@ -12,9 +12,9 @@ public:
     : mSelf(*ll::mod::NativeMod::current()),
       mLogger(mSelf.getLogger()) {}
 
-    void load();
-    void enable();
-    void disable();
+    bool load();
+    bool enable();
+    bool disable();
 
 private:
     void registerCommand();
